@@ -1,4 +1,4 @@
-Busy Bunny - useful AMQP abstractions
+Busy Bunny - useful AMQP abstractions [![Build Status](https://travis-ci.org/codequest-eu/busy_bunny.svg)](https://travis-ci.org/codequest-eu/busy_bunny)
 ---
 
 While we're working shifts on creating exquisite documentation, how about you have a look at a cute bunny?
