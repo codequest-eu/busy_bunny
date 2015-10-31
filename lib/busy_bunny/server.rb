@@ -10,8 +10,7 @@ module BusyBunny
     def initialize(*conn_pool)
       super(*conn_pool)
       @single_queue = conn_pool.size < 2
-      self.class.build_response_channel(
-        @single_queue ? conn_pool.first : conn_pool[1])
+      build_response_channel(@single_queue ? conn_pool.first : conn_pool[1])
     end
 
     # Put a message on the response channel.
