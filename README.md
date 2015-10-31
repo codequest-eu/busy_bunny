@@ -1,4 +1,4 @@
-Busy Bunny - useful abstractions for AMQP-based workflows
+Busy Bunny - useful AMQP abstractions
 ---
 
 While we're working shifts on creating exquisite documentation, how about you have a look at a cute bunny?
