@@ -3,7 +3,9 @@ module BusyBunny
   class HandlerPool
     # HandlerPool constructor.
     #
-    # @param conn_pool [Array<Bunny::Session>] List of connections to use.
+    # @param conn_pool [Array<Bunny::Session>] List of connections to use. Note
+    #        that HandlerPool takes ownership of any connections passed to it
+    #        and will take care of closing them.
     def initialize(*conn_pool)
       @conns = conn_pool
       @handlers = []

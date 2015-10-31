@@ -13,13 +13,12 @@ module BusyBunny
       build_response_channel(@single_queue ? conn_pool.first : conn_pool[1])
     end
 
-    # Put a message on the response channel.
-    # @param response [type] [description]
-    # @param message_opts [type] [description]
+    # Put a message on the response channel. This is a helper method which is
+    # going to be called from within a concrete implementation of 'handle'.
     #
-    # @return [type] [description]
-    def respond(response, message_opts)
-      @response_queue.publish(response, message_opts)
+    # @param response [String] Response as a raw string.
+    def respond(response)
+      @response_queue.publish(response, publish_opts)
     end
 
     # Closes underlying AMQP channels.
@@ -29,6 +28,12 @@ module BusyBunny
     end
 
     private
+
+    # Concrete implementations that want to change the options used for queue
+    # publishing may override this for their specific requirements.
+    def publish_opts
+      { persistent: true, content_type: 'application/json' }
+    end
 
     def build_response_channel(conn)
       @response_channel = @channel if @single_queue
