@@ -67,7 +67,7 @@ module BusyBunny
     end
 
     def run_one(delivery_info, _properties, request)
-      respond(request)
+      handle(request)
       @channel.ack(delivery_info.delivery_tag)
     end
 
