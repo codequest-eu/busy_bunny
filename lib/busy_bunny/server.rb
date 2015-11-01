@@ -1,16 +1,21 @@
 module BusyBunny
-  # Server is a special case of Handler which not only takes requests from a
-  # queue but puts back its responses on a different queue.
-  class Server < Handler
-    RESPONSE_QUEUE = ''
-
+  # Server is a two-way connection to AMQP whereby read and write end may exist
+  # on totally separate servers, represented by conections.
+  class Server < Subscriber
     # Server constructor. Server uses one or two connections (if provided).
+    # While it takes a huge number of arguments concrete implementations may
+    # have shorter constructors and hardcode things like queue names or prefetch
+    # sizes in class constants.
     #
-    # @param conn_pool [Array<Bunny::Session>] List of connections to use.
-    def initialize(*conn_pool)
-      super(*conn_pool)
-      @single_queue = conn_pool.size < 2
-      build_response_channel(@single_queue ? conn_pool.first : conn_pool[1])
+    # @param req_conn [Bunny::Session] Connection to use for requests.
+    # @param res_conn [Bunny::Session] Connection to use for responses.
+    # @param req_name [String] Queue name for requests.
+    # @param res_name [type] Queue name for responses.
+    # @param prefetch = 1 Maximum number of messages to check out before sending
+    #        an acknowledgement to the AMQP server.
+    def initialize(req_conn, res_conn, req_name, res_name, prefetch: 1)
+      super(req_conn, req_name, prefetch)
+      @publisher = publisher_class.new(res_conn, res_name)
     end
 
     # Put a message on the response channel. This is a helper method which is
@@ -18,28 +23,20 @@ module BusyBunny
     #
     # @param response [String] Response as a raw string.
     def respond(response)
-      @response_queue.publish(response, publish_opts)
+      @publisher.publish(response)
     end
 
     # Closes underlying AMQP channels.
     def shutdown_gracefully
       super
-      @response_channel.close unless @single_queue
+      @publisher.shutdown_gracefully
     end
 
     private
 
-    # Concrete implementations that want to change the options used for queue
-    # publishing may override this for their specific requirements.
-    def publish_opts
-      { persistent: true, content_type: 'application/json' }
-    end
-
-    def build_response_channel(conn)
-      @response_channel = @channel if @single_queue
-      @response_channel ||= self.class.build_channel(conn)
-      @response_queue = self.class.build_queue(
-        @response_channel, self.class::RESPONSE_QUEUE)
+    # Publisher class to use. In most cases this won't need to be overridden.
+    def publisher_class
+      Publisher
     end
   end # class Server
 end # module BusyBunny
