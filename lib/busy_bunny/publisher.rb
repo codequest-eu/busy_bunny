@@ -10,9 +10,8 @@ module BusyBunny
     end
 
     # Publish a message on the underlying queue.
-    # @param message [String] Raw message data.
     #
-    # @return [type] [description]
+    # @param message [String] Raw message data.
     def publish(message)
       @queue.publish(message, publish_opts)
     end
