@@ -14,7 +14,7 @@ module BusyBunny
     # @param prefetch = 1 Maximum number of messages to check out before sending
     #        an acknowledgement to the AMQP server.
     def initialize(req_conn, res_conn, req_name, res_name, prefetch: 1)
-      super(req_conn, req_name, prefetch)
+      super(req_conn, req_name, prefetch: prefetch)
       @publisher = publisher_class.new(res_conn, res_name)
     end
 
