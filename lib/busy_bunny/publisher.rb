@@ -13,6 +13,7 @@ module BusyBunny
     #
     # @param message [String] Raw message data.
     def publish(message)
+      @channel.open unless @channel.open?
       @queue.publish(message, publish_opts)
     end
 
