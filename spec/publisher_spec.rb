@@ -9,6 +9,7 @@ module BusyBunny # rubocop:disable Style/Documentation
 
     describe '#publish' do
       before do
+        expect(channel).to receive(:open?) { true }
         expect(queue).to receive(:publish).with(message, instance_of(Hash))
       end
 
