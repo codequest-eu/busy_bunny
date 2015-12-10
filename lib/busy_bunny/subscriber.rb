@@ -22,7 +22,7 @@ module BusyBunny
     private
 
     def run
-      @queue.subscribe(queue_opts, &method(:run_one))
+      @queue.subscribe(subscription_opts, &method(:run_one))
     end
 
     def run_one(delivery_info, _properties, request)
@@ -34,7 +34,7 @@ module BusyBunny
     # subscription may override this for their specific requirements.
     #
     # @return [Hash]
-    def queue_opts
+    def subscription_opts
       { manual_ack: true, block: true }
     end
   end # class Handler

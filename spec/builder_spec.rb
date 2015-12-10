@@ -28,7 +28,7 @@ module BusyBunny # rubocop:disable Style/Documentation
 
     describe '.build_queue' do
       let(:name) { 'name' }
-      before { expect(chan).to receive(:queue).with(name, durable: true) }
+      before { expect(chan).to receive(:queue).with(name, {}) }
 
       it 'works' do
         expect { described_class.build_queue(chan, name) }.to_not raise_error
