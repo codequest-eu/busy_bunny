@@ -9,7 +9,9 @@ module BusyBunny # rubocop:disable Style/Documentation
     describe '#initialize' do
       before do
         expect(Builder).to receive(:build_channel).with(conn, 1) { channel }
-        expect(Builder).to receive(:build_queue).with(channel, qname)
+        expect(Builder)
+          .to receive(:build_queue)
+          .with(channel, qname, durable: true)
       end
 
       it 'works' do
