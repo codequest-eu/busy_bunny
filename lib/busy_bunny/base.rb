@@ -10,7 +10,7 @@ module BusyBunny
     #        an acknowledgement to the AMQP server.
     def initialize(conn, qname, prefetch: 1)
       @channel = Builder.build_channel(conn, prefetch)
-      @queue = Builder.build_queue(@channel, qname)
+      @queue = Builder.build_queue(@channel, qname, queue_opts)
     end
 
     # Close the underlying AMQP channel.
