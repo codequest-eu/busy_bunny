@@ -17,5 +17,10 @@ module BusyBunny
     def shutdown_gracefully
       @channel.close
     end
+
+    # Hash of options to use when declaring a queue.
+    def queue_opts
+      { durable: true }
+    end
   end # class Base
 end # module BusyBunny

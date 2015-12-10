@@ -15,11 +15,11 @@ module BusyBunny
     #
     # @param channel [Bunny::Channel] Channel for the queue to use.
     # @param name [String] Name of the queue.
-    # @param durable: true [boolean] Whether to make this queue durable.
+    # @param queue_opts: [Hash] Queue declaration options.
     #
     # @return [Bunny::Queue]
-    def self.build_queue(channel, name, durable: true)
-      channel.queue(name, durable: durable)
+    def self.build_queue(channel, name, queue_opts = {})
+      channel.queue(name, queue_opts)
     end
   end # class Builder
 end # module BusyBunny
