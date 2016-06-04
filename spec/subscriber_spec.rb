@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module BusyBunny # rubocop:disable Style/Documentation
+module BusyBunny
   describe Subscriber do
     let(:channel) { double('channel') }
     let(:queue)   { double('queue') }
@@ -40,18 +40,45 @@ module BusyBunny # rubocop:disable Style/Documentation
 
     describe '#run_one' do # # NOTE: testing private method
       let(:delivery_tag) { 'tag' }
-      let(:delivery_info) { double('del_info', delivery_tag: delivery_tag) }
+      let(:delivery_info) do
+        double(
+          'delivery_info',
+          delivery_tag: delivery_tag,
+          redelivered?: redelivered
+        )
+      end
       let(:request) { 'request' }
+      let(:properties) { double('message_properties') }
 
-      before do
-        expect(subject).to receive(:handle).with(request)
-        expect(channel).to receive(:ack).with(delivery_tag)
-      end
+      shared_examples 'run_one_works' do
+        it 'works' do
+          expect { subject.send(:run_one, delivery_info, properties, request) }
+            .to_not raise_error
+        end
+      end # shared_examples 'run_one_works'
 
-      it 'works' do
-        expect { subject.send(:run_one, delivery_info, nil, request) }
-          .to_not raise_error
-      end
+      context 'when not redelivered' do
+        let(:redelivered) { false }
+
+        before do
+          expect(channel).to receive(:ack).with(delivery_tag)
+          expect(subject).to receive(:handle).with(request)
+        end
+
+        it_behaves_like 'run_one_works'
+      end # context 'when not redelivered'
+
+      context 'when redelivered' do
+        let(:redelivered) { true }
+
+        before do
+          expect(subject)
+            .to receive(:handle_redelivery)
+            .with(delivery_info, properties, request)
+        end
+
+        it_behaves_like 'run_one_works'
+      end # context 'when redelivered'
     end # describe '#run_one'
   end # describe Subscriber
 end # module BusyBunny
